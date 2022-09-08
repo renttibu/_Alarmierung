@@ -153,6 +153,46 @@ trait ALM_Config
             ]
         ];
 
+        //Trigger list
+        $triggerListValues = [];
+        $variables = json_decode($this->ReadPropertyString('TriggerList'), true);
+        foreach ($variables as $variable) {
+            $rowColor = '#C0FFC0'; //light green
+            if (!$variable['Use']) {
+                $rowColor = '#DFDFDF'; //grey
+            }
+            //Primary condition
+            if ($variable['PrimaryCondition'] != '') {
+                $primaryCondition = json_decode($variable['PrimaryCondition'], true);
+                if (array_key_exists(0, $primaryCondition)) {
+                    if (array_key_exists(0, $primaryCondition[0]['rules']['variable'])) {
+                        $id = $primaryCondition[0]['rules']['variable'][0]['variableID'];
+                        if ($id <= 1 || !@IPS_ObjectExists($id)) { //0 = main category, 1 = none
+                            $rowColor = '#FFC0C0'; //red
+                        }
+                    }
+                }
+            }
+            //Secondary condition, multi
+            if ($variable['SecondaryCondition'] != '') {
+                $secondaryConditions = json_decode($variable['SecondaryCondition'], true);
+                if (array_key_exists(0, $secondaryConditions)) {
+                    if (array_key_exists('rules', $secondaryConditions[0])) {
+                        $rules = $secondaryConditions[0]['rules']['variable'];
+                        foreach ($rules as $rule) {
+                            if (array_key_exists('variableID', $rule)) {
+                                $id = $rule['variableID'];
+                                if ($id <= 1 || !@IPS_ObjectExists($id)) { //0 = main category, 1 = none
+                                    $rowColor = '#FFC0C0'; //red
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            $triggerListValues[] = ['rowColor' => $rowColor];
+        }
+
         $form['elements'][] = [
             'type'    => 'ExpansionPanel',
             'caption' => 'Auslöser',
@@ -295,7 +335,8 @@ trait ALM_Config
                                 ]
                             ]
                         ]
-                    ]
+                    ],
+                    'values' => $triggerListValues
                 ],
                 [
                     'type'     => 'OpenObjectButton',
@@ -611,46 +652,6 @@ trait ALM_Config
             ]
         ];
 
-        //Trigger list
-        $variables = json_decode($this->ReadPropertyString('TriggerList'), true);
-        foreach ($variables as $variable) {
-            $rowColor = '#C0FFC0'; //light green
-            if (!$variable['Use']) {
-                $rowColor = '#DFDFDF'; //grey
-            }
-            //Primary condition
-            if ($variable['PrimaryCondition'] != '') {
-                $primaryCondition = json_decode($variable['PrimaryCondition'], true);
-                if (array_key_exists(0, $primaryCondition)) {
-                    if (array_key_exists(0, $primaryCondition[0]['rules']['variable'])) {
-                        $id = $primaryCondition[0]['rules']['variable'][0]['variableID'];
-                        if ($id <= 1 || !@IPS_ObjectExists($id)) { //0 = main category, 1 = none
-                            $rowColor = '#FFC0C0'; //red
-                        }
-                    }
-                }
-            }
-            //Secondary condition, multi
-            if ($variable['SecondaryCondition'] != '') {
-                $secondaryConditions = json_decode($variable['SecondaryCondition'], true);
-                if (array_key_exists(0, $secondaryConditions)) {
-                    if (array_key_exists('rules', $secondaryConditions[0])) {
-                        $rules = $secondaryConditions[0]['rules']['variable'];
-                        foreach ($rules as $rule) {
-                            if (array_key_exists('variableID', $rule)) {
-                                $id = $rule['variableID'];
-                                if ($id <= 1 || !@IPS_ObjectExists($id)) { //0 = main category, 1 = none
-                                    $rowColor = '#FFC0C0'; //red
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            $form['elements'][2]['items'][0]['values'][] = [
-                'rowColor' => $rowColor];
-        }
-
         //Alarm protocol
         $id = $this->ReadPropertyInteger('AlarmProtocol');
         $enableButton = false;
@@ -658,7 +659,7 @@ trait ALM_Config
             $enableButton = true;
         }
 
-        $form['elements'][7] = [
+        $form['elements'][] = [
             'type'    => 'ExpansionPanel',
             'caption' => 'Alarmprotokoll',
             'items'   => [
