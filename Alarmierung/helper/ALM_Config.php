@@ -128,7 +128,7 @@ trait ALM_Config
                 [
                     'type'    => 'CheckBox',
                     'name'    => 'EnableActive',
-                    'caption' => 'Aktiv'
+                    'caption' => 'Aktiv (Schalter im WebFront)'
                 ],
                 [
                     'type'    => 'CheckBox',
