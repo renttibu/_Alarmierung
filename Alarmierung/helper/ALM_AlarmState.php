@@ -51,6 +51,23 @@ trait ALM_AlarmState
     }
 
     /**
+     * Executes a panic alarming.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function ExecutePanicAlarming(): void
+    {
+        $this->SendDebug(__FUNCTION__, 'wird ausgeführt', 0);
+        $this->SendDebug(__FUNCTION__, 'wird ausgeführt', 0);
+        if ($this->CheckMaintenance()) {
+            $this->SetDefault();
+            return;
+        }
+        $this->SetMainAlarm();
+    }
+
+    /**
      * Set the alarming to the default values, reset.
      *
      * @throws Exception

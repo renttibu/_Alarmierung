@@ -65,8 +65,13 @@ trait ALM_TriggerCondition
                             if (!$execute) {
                                 $this->SendDebug(__FUNCTION__, 'Abbruch, die Bedingungen wurden nicht erfüllt!', 0);
                             } else {
-                                $this->SendDebug(__FUNCTION__, 'Die Bedingungen wurden erfüllt.', 0);
-                                $this->SetAlarming((bool) $variable['Alarming']);
+                                //Panic alarm
+                                if ($variable['Alarming'] == 2) {
+                                    $this->ExecutePanicAlarming();
+                                } else {
+                                    $this->SendDebug(__FUNCTION__, 'Die Bedingungen wurden erfüllt.', 0);
+                                    $this->SetAlarming((bool) $variable['Alarming']);
+                                }
                             }
                         }
                     }

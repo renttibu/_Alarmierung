@@ -331,6 +331,10 @@ trait ALM_Config
                                     [
                                         'caption' => 'Alarm',
                                         'value'   => 1
+                                    ],
+                                    [
+                                        'caption' => 'Panikalarm',
+                                        'value'   => 2
                                     ]
                                 ]
                             ]
